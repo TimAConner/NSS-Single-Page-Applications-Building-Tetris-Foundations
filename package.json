@@ -1,0 +1,28 @@
+{
+  "name": "NSS-Single-Page-Applications-Building-Tetris-Foundations",
+  "version": "1.0.0",
+  "description": "This was Javascript practice done while attending the [Nashville Software School](http://nashvillesoftwareschool.com/).",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TimAConner/NSS-Single-Page-Applications-Building-Tetris-Foundations.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TimAConner/NSS-Single-Page-Applications-Building-Tetris-Foundations/issues"
+  },
+  "homepage": "https://github.com/TimAConner/NSS-Single-Page-Applications-Building-Tetris-Foundations#readme",
+  "dependencies": {
+    "grunt": "^1.0.1",
+    "grunt-browserify": "^5.2.0",
+    "grunt-contrib-jshint": "^1.1.0",
+    "grunt-contrib-sass": "^1.0.0",
+    "grunt-contrib-watch": "^1.0.0",
+    "matchdep": "^2.0.0"
+  }
+}
