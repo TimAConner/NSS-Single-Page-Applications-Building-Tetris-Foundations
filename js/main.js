@@ -87,7 +87,7 @@ let Shape = function(options = {}){
     this.color = options.color || "#FF0000";
 
     this.direction="r";
-    this.speed = 2;
+    this.speed = 5;
 
     this.draw = function() {
         // Draw code goes here.
@@ -106,11 +106,27 @@ let Shape = function(options = {}){
 
 Shape.prototype.isAboveBottom = function(){
     let bottomOfShape = (this.y+this.h);
-    if(bottomOfShape < Game.canvas.height){
-        return true;
-    } else {
-        return false;
+    let shapeBelow = false;
+
+    // If it is not above an object
+    for(let i = 0; i < shapes.length; i++){
+        if(shapes[i].id !== this.id){
+            if(((this.x >= shapes[i].x+1) && (this.x <= (shapes[i].x+shapes[i].w-1)))) {
+                if(bottomOfShape > shapes[i].y){
+                    return false;
+                }
+            }
+        }
     }
+
+    return true;
+    // if(shapeBelow === false){
+    //     if(bottomOfShape < Game.canvas.height){
+    //         return true;
+    //     } else {
+    //         return false;
+    //     }
+    // }
 };
 
 Shape.prototype.update = function(player = false) {
@@ -118,19 +134,41 @@ Shape.prototype.update = function(player = false) {
     if(player === true){
         let leftMax = 0;
     
-        if ((this.isAboveBottom()) && ((Keys.Left == true) && (this.x >= leftMax))){
-            this.x = this.x - this.speed;
-        }
+      
     
 
-        // Account for speed of movement offset
-        
-        let objectInWay = false;
+        let objectInWayLeft = false;
         for(let i = 0; i < shapes.length; i++){
             if(shapes[i].id !== this.id){
                 if((this.y >= shapes[i].y) && (this.y  <= (shapes[i].y+shapes[i].h))){
-                    let rightMax = (this.y >  shapes[i].h) ? Game.canvas.width : (Game.canvas.width-shapes[i].w);
-                    objectInWay = true;
+                    // let rightMax = (this.y >  (shapes[i].h+shapes[i].y)) ? Game.canvas.width : (((Game.canvas.width)-shapes[i].w-this.w-this.speed));
+                    let leftMax = (this.y >  (shapes[i].h+shapes[i].y)) ? 0 : ((shapes[i].x+shapes[i].w+this.speed));
+                    // console.log("x", this.x, "canvas", Game.canvas.width, shapes[i].x, this.w);
+                    objectInWayLeft = true;
+                    if ((this.isAboveBottom()) && ((Keys.Left == true) && (this.x >= leftMax))){
+                        this.x = this.x - this.speed;
+                    }
+                }
+            }
+        }
+        if(objectInWayLeft === false){
+            let leftMax = Game.canvas.width;
+            
+            if ((this.isAboveBottom()) && ((Keys.Left == true) && (this.x >= leftMax))){
+                this.x = this.x - this.speed;
+            }
+        }
+
+        // Account for speed of movement offset
+
+        let objectInWayRight = false;
+        for(let i = 0; i < shapes.length; i++){
+            if(shapes[i].id !== this.id){
+                if((this.y >= shapes[i].y) && (this.y  <= (shapes[i].y+shapes[i].h))){
+                    // let rightMax = (this.y >  (shapes[i].h+shapes[i].y)) ? Game.canvas.width : (((Game.canvas.width)-shapes[i].w-this.w-this.speed));
+                    let rightMax = (this.y >  (shapes[i].h+shapes[i].y)) ? Game.canvas.width : (shapes[i].x-this.speed);
+                    // console.log("x", this.x, "canvas", Game.canvas.width, shapes[i].x, this.w);
+                    objectInWayRight = true;
                     if ((this.isAboveBottom()) && ((Keys.Right == true) && ((this.x+this.w) <= rightMax))) {
                         this.x = this.x + this.speed;
                     }
@@ -138,7 +176,7 @@ Shape.prototype.update = function(player = false) {
             }
         }
 
-        if(objectInWay === false){
+        if(objectInWayRight === false){
             let rightMax = Game.canvas.width;
             
             if ((this.isAboveBottom()) && ((Keys.Right == true) && ((this.x+this.w) <= rightMax))) {
@@ -165,18 +203,47 @@ Shape.prototype.drop = function(change = 0.5, interval = 10){
 
 // Player1.drop(0.5, 10);
 
-shapes.push(new Shape());
-shapes[0].drop(0.5, 10);
+shapes.push(new Shape({
+    w: 25,
+    h: 25,
+}));
+shapes[0].drop(0.1, 10);
+
+// shapes.push(new Shape({
+//     h: 150,
+//     w: 150,
+//     x: (Game.canvas.width-150),
+//     y: 0,
+//     stroke: true,
+//     color: "#FFF"
+// }));
 
 shapes.push(new Shape({
     h: 150,
     w: 150,
-    x: (Game.canvas.width-150),
+    x: (Game.canvas.width-160),
     y: 0,
     stroke: true,
     color: "#FFF"
 }));
 
+shapes.push(new Shape({
+    h: 150,
+    w: 10,
+    x: 25,
+    y: 0,
+    stroke: true,
+    color: "#FFF"
+}));
+
+shapes.push(new Shape({
+    h: 10,
+    w: 100,
+    x: 25,
+    y: 150,
+    stroke: true,
+    color: "#FFF"
+}));
 
 // Core Methods
 Game.run = function() {
