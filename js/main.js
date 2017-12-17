@@ -81,20 +81,31 @@ let Shape = function(options = {}){
     this.id = options.id || shapesId;
     this.h = options.h || 25;
     this.w = options.w || 25;
-    this.x = options.x  || (Game.canvas.width/2)-this.w ;
+    this.x = options.x  || ((Game.canvas.width/2)-this.w);
+
     this.y = options.y || 0;
     this.stroke = options.stroke || false;
     this.color = options.color || "#FF0000";
+    this.middle = this.x + (this.w/2);
+    this.rightEdge = this.x + this.w;   
+    this.borderWidth = options.borderWidth || 1;
 
     this.direction="r";
-    this.speed = 5;
+    this.horizontalSpeed = 5;
+    this.ignore = options.ignore || false;
+
 
     this.draw = function() {
         // Draw code goes here.
+
         if(this.stroke === false){
+            Game.ctx.lineWidth = 3;
+            this.lineWidth = Game.ctx.lineWidth ; 
             Game.ctx.fillStyle= this.color;
             Game.ctx.fillRect(this.x,this.y,this.w,this.h);
         } else {
+            Game.ctx.lineWidth = 3;
+            this.lineWidth = Game.ctx.lineWidth ; 
             Game.ctx.strokeStyle= this.color;
             Game.ctx.strokeRect(this.x,this.y,this.w,this.h);
         }
@@ -104,20 +115,37 @@ let Shape = function(options = {}){
 
 };
 
-Shape.prototype.isAboveBottom = function(){
-    let bottomOfShape = (this.y+this.h);
+const isInsideXAxis = (shape1, shape2) => {
+    // |
+    let string = "";
+
+    if((((shape1.x > (shape2.x-shape2.lineWidth)) && (shape1.x < (shape2.x+shape2.w+shape2.lineWidth))) || (((shape1.rightEdge > shape2.x) &&(shape1.rightEdge < shape2.rightEdge))))){
+        return true;
+    } else {
+        return false;
+    }
+};
+
+Shape.prototype.isEmptySpaceBelow = function(){
+    let bottomOfShape = (this.y+this.h+this.lineWidth);
     let shapeBelow = false;
 
     // If it is not above an object
     for(let i = 0; i < shapes.length; i++){
-        if(shapes[i].id !== this.id){
-            if(((this.x >= shapes[i].x+1) && (this.x <= (shapes[i].x+shapes[i].w-1)))) {
-                if(bottomOfShape > shapes[i].y){
+        if(shapes[i].id !== this.id && this.ignore === false){
+
+            // Compare range function?
+            if(isInsideXAxis(this, shapes[i])) {
+                if((bottomOfShape > (shapes[i].y-this.borderWidth)) && (bottomOfShape < (shapes[i].y + shapes[i].h))){
                     return false;
                 }
             }
         }
     }
+
+    if(bottomOfShape >= Game.canvas.height){
+        return false;
+    } 
 
     return true;
     // if(shapeBelow === false){
@@ -131,67 +159,96 @@ Shape.prototype.isAboveBottom = function(){
 
 Shape.prototype.update = function(player = false) {
     // Update code goes here.
+    this.rightEdge = this.x + this.w;
+    
     if(player === true){
-        let leftMax = 0;
-    
-      
-    
+        // let leftMax = 0;
 
-        let objectInWayLeft = false;
+        // let objectInWayLeft = false;
+        let leftMax = this.lineWidth;
+        let rightMax = Game.canvas.width-this.lineWidth;
+
         for(let i = 0; i < shapes.length; i++){
             if(shapes[i].id !== this.id){
-                if((this.y >= shapes[i].y) && (this.y  <= (shapes[i].y+shapes[i].h))){
-                    // let rightMax = (this.y >  (shapes[i].h+shapes[i].y)) ? Game.canvas.width : (((Game.canvas.width)-shapes[i].w-this.w-this.speed));
-                    let leftMax = (this.y >  (shapes[i].h+shapes[i].y)) ? 0 : ((shapes[i].x+shapes[i].w+this.speed));
-                    // console.log("x", this.x, "canvas", Game.canvas.width, shapes[i].x, this.w);
-                    objectInWayLeft = true;
-                    if ((this.isAboveBottom()) && ((Keys.Left == true) && (this.x >= leftMax))){
-                        this.x = this.x - this.speed;
+                if((this.y >= shapes[i].y) && (this.y  <= (shapes[i].y+shapes[i].h)) || (((this.y+this.h) >= shapes[i].y) && (this.y+this.h) <= (shapes[i].y+shapes[i].h) )){
+
+                    let maxLeftTest = ((shapes[i].x+shapes[i].w+shapes[i].lineWidth));
+
+                    if(maxLeftTest >  leftMax){
+                        leftMax = maxLeftTest;
                     }
-                }
-            }
-        }
-        if(objectInWayLeft === false){
-            let leftMax = Game.canvas.width;
-            
-            if ((this.isAboveBottom()) && ((Keys.Left == true) && (this.x >= leftMax))){
-                this.x = this.x - this.speed;
-            }
-        }
 
-        // Account for speed of movement offset
-
-        let objectInWayRight = false;
-        for(let i = 0; i < shapes.length; i++){
-            if(shapes[i].id !== this.id){
-                if((this.y >= shapes[i].y) && (this.y  <= (shapes[i].y+shapes[i].h))){
-                    // let rightMax = (this.y >  (shapes[i].h+shapes[i].y)) ? Game.canvas.width : (((Game.canvas.width)-shapes[i].w-this.w-this.speed));
-                    let rightMax = (this.y >  (shapes[i].h+shapes[i].y)) ? Game.canvas.width : (shapes[i].x-this.speed);
-                    // console.log("x", this.x, "canvas", Game.canvas.width, shapes[i].x, this.w);
-                    objectInWayRight = true;
-                    if ((this.isAboveBottom()) && ((Keys.Right == true) && ((this.x+this.w) <= rightMax))) {
-                        this.x = this.x + this.speed;
+                    let rightMaxTest = ((shapes[i].x-shapes[i].lineWidth));
+                    if(rightMaxTest > this.rightEdge){
+                        if(rightMaxTest <  rightMax){
+                            rightMax = rightMaxTest;
+                        }
                     }
                 }
             }
         }
 
-        if(objectInWayRight === false){
-            let rightMax = Game.canvas.width;
-            
-            if ((this.isAboveBottom()) && ((Keys.Right == true) && ((this.x+this.w) <= rightMax))) {
-                this.x = this.x + this.speed;
-            }
+        if ((this.isEmptySpaceBelow()) && ((Keys.Left == true) && ((this.x-this.horizontalSpeed) >= leftMax))){
+            this.x = this.x - this.horizontalSpeed;
         }
+
+        if ((this.isEmptySpaceBelow()) && ((Keys.Right == true) && ((this.x+this.w+this.horizontalSpeed) <= rightMax))) {
+            this.x = this.x + this.horizontalSpeed;
+            console.log("hey");
+        }
+        
+
+        // Account for horizontalSpeed of movement offset
+
+    //     let rightMax = 0;
+    //     let objectInWayRight = false;
+    //     for(let i = 0; i < shapes.length; i++){
+    //         if(shapes[i].id !== this.id){
+    //             if((this.y >= shapes[i].y) && (this.y  <= (shapes[i].y+shapes[i].h)) || (((this.y+this.h) >= shapes[i].y) && (this.y+this.h) <= (shapes[i].y+shapes[i].h) )){
+    //                 // let rightMax = (this.y >  (shapes[i].h+shapes[i].y)) ? Game.canvas.width : (((Game.canvas.width)-shapes[i].w-this.w-this.horizontalSpeed));
+    //                 rightMax = (shapes[i].x+shapes[x].lineWidth);
+    //                 if(curRightMax <  rightMax){
+    //                     rightMax = curRightMax;
+    //                 }
+
+    //                 console.log("x", this.x, "curRightMax", curRightMax);
+                    
+    //                 // console.log("x", this.x, "canvas", Game.canvas.width, shapes[i].x, this.w);
+    //                 objectInWayRight = true;
+    //                 if ((this.isEmptySpaceBelow()) && ((Keys.Right == true) && ((this.x+this.w) <= rightMax))) {
+    //                     this.x = this.x + this.horizontalSpeed;
+    //                 }
+    //             }
+    //         }
+    //     }
+
+    //     if(objectInWayRight === false){
+    //         let rightMaxQ = Game.canvas.width;
+            
+    //         if ((this.isEmptySpaceBelow()) && ((Keys.Right == true) && ((this.x+this.w) <= rightMaxQ))) {
+    //             this.x = this.x + this.horizontalSpeed;
+    //         }
+    //     }
 
     }
 };
 
 Shape.prototype.drop = function(change = 0.5, interval = 10){
     let dropInterval = setInterval(() => {
-        if(this.isAboveBottom()){
+        if(this.isEmptySpaceBelow()){
             this.y += change;
         } else {
+
+            // Create new block when this one hits the bottom
+            shapes.unshift(new Shape({
+                w: 100,
+                h: 100,
+                x: 200,
+                color: "blue",
+                stroke: true
+            }));
+            shapes[0].drop(1, 10);
+
             clearInterval(dropInterval);
         }
     }, interval);
@@ -204,46 +261,77 @@ Shape.prototype.drop = function(change = 0.5, interval = 10){
 // Player1.drop(0.5, 10);
 
 shapes.push(new Shape({
-    w: 25,
-    h: 25,
+    w: 100,
+    h: 100,
+    x: 250,
+    stroke: true
 }));
-shapes[0].drop(0.1, 10);
+shapes[0].drop(1, 10);
+
+
+shapes.push(new Shape({
+    w: 50,
+    h: 100,
+    x: 1,
+    y: 150,
+    stroke: true
+}));
+
+// shapes.push(new Shape({
+//     x: 1,
+//     y: 1,
+//     w: 70,
+//     h: 500,
+//     stroke: true
+// }));
+
+// // shapes.push(new Shape({
+// //     h: 150,
+// //     w: 150,
+// //     x: (Game.canvas.width-150),
+// //     y: 0,
+// //     stroke: true,
+// //     color: "#FFF"
+// // }));
 
 // shapes.push(new Shape({
 //     h: 150,
 //     w: 150,
-//     x: (Game.canvas.width-150),
+//     x: (Game.canvas.width-160),
 //     y: 0,
 //     stroke: true,
 //     color: "#FFF"
 // }));
 
-shapes.push(new Shape({
-    h: 150,
-    w: 150,
-    x: (Game.canvas.width-160),
-    y: 0,
-    stroke: true,
-    color: "#FFF"
-}));
+// shapes.push(new Shape({
+//     h: 150,
+//     w: 10,
+//     x: 25,
+//     y: 0,
+//     stroke: true,
+//     color: "#FFF"
+// }));
 
-shapes.push(new Shape({
-    h: 150,
-    w: 10,
-    x: 25,
-    y: 0,
-    stroke: true,
-    color: "#FFF"
-}));
+// shapes.push(new Shape({
+//     h: 10,
+//     w: 100,
+//     x: 25,
+//     y: 150,
+//     stroke: true,
+//     color: "#FFF"
+// }));
 
-shapes.push(new Shape({
-    h: 10,
-    w: 100,
-    x: 25,
-    y: 150,
-    stroke: true,
-    color: "#FFF"
-}));
+
+// shapes.push(new Shape({
+//     h: 10,
+//     w: 50,
+//     x: 100,
+//     y: 250,
+//     stroke: true,
+//     color: "#FFF"
+// }));
+
+
 
 // Core Methods
 Game.run = function() {
