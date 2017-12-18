@@ -12,6 +12,9 @@ Game.createShape = function(){
 
 let shapes = [];
 let shapesId = 0;
+let selectedShape = {};
+
+let globalMousePosition;
 
 // Game Variables
 Game.canvas = document.getElementById('myCanvas');
@@ -71,14 +74,26 @@ window.onkeyup = function() {
 	}
 };
 
+function getMousePos(canvas, evt) {
+    let rect = canvas.getBoundingClientRect();
+    return {
+      x: evt.clientX - rect.left,
+      y: evt.clientY - rect.top
+    };
+}
+
+const getNewId = () => {
+    shapesId ++;
+    return shapesId;
+};
+
 /* Shape.js */
 let Shape = function(options = {}){
 
     // Options id, x, y, width, height, stroke = false
+    // X and Y should be 1 by defualt, not zero.  Zero is false and doesn twork with the system below.  Need to fix
 
-    shapesId ++;
-
-    this.id = options.id || shapesId;
+    this.id = options.id || getNewId();
     this.h = options.h || 25;
     this.w = options.w || 25;
     this.x = options.x  || ((Game.canvas.width/2)-this.w);
@@ -94,9 +109,20 @@ let Shape = function(options = {}){
     this.horizontalSpeed = 5;
     this.ignore = options.ignore || false;
 
+    this.prefab = options.prefab || false;
+
+    this.followMouse = options.followMouse || false;
+
 
     this.draw = function() {
         // Draw code goes here.
+        if(this.followMouse){
+            this.ignore = true;
+            this.x = globalMousePosition.x;
+            this.y = globalMousePosition.y;
+        } else {
+            this.ignore = false;
+        }
 
         if(this.stroke === false){
             Game.ctx.lineWidth = 3;
@@ -119,7 +145,15 @@ const isInsideXAxis = (shape1, shape2) => {
     // |
     let string = "";
 
-    if((((shape1.x > (shape2.x-shape2.lineWidth)) && (shape1.x < (shape2.x+shape2.w+shape2.lineWidth))) || (((shape1.rightEdge > shape2.x) &&(shape1.rightEdge < shape2.rightEdge))))){
+    //  )
+
+    if(((shape1.x > (shape2.x-shape2.lineWidth)) && (shape1.x < (shape2.x+shape2.w+shape2.lineWidth))) || (((shape1.rightEdge > shape2.x) && (shape1.rightEdge < shape2.rightEdge)))){
+        // console.log('shape2.x', shape2.x);
+        // console.log('shape1.rightEdge', shape1.rightEdge);
+        // console.log('shape2.rightEdge', shape2.rightEdge);
+        // console.log('shape1.x', shape1.x);
+        // console.log('(shape2.x-shape2.lineWidth)', (shape2.x-shape2.lineWidth));
+        // console.log('shape1.rightEdge', shape1.rightEdge);
         return true;
     } else {
         return false;
@@ -129,14 +163,17 @@ const isInsideXAxis = (shape1, shape2) => {
 Shape.prototype.isEmptySpaceBelow = function(){
     let bottomOfShape = (this.y+this.h+this.lineWidth);
     let shapeBelow = false;
-
     // If it is not above an object
     for(let i = 0; i < shapes.length; i++){
-        if(shapes[i].id !== this.id && this.ignore === false){
-
+        if(shapes[i].id !== this.id && shapes[i].ignore === false){
+            
             // Compare range function?
             if(isInsideXAxis(this, shapes[i])) {
                 if((bottomOfShape > (shapes[i].y-this.borderWidth)) && (bottomOfShape < (shapes[i].y + shapes[i].h))){
+                    // console.log("bottom of shape", bottomOfShape);
+                    // console.log('shapes[i].y', shapes[i].y);
+                    // console.log('(shapes[i].y + shapes[i].h)', (shapes[i].y + shapes[i].h));
+                    // console.log(shapes[i]);
                     return false;
                 }
             }
@@ -234,20 +271,30 @@ Shape.prototype.update = function(player = false) {
 };
 
 Shape.prototype.drop = function(change = 0.5, interval = 10){
+    // console.log("dropping");
     let dropInterval = setInterval(() => {
-        if(this.isEmptySpaceBelow()){
-            this.y += change;
-        } else {
 
+        // Right now is empty space below is reteurning true for some reason.
+        // console.log('this.rightEdge', this.rightEdge);
+        this.rightEdge = this.x + this.w;
+        
+        if(this.isEmptySpaceBelow()){
+            
+            this.y += change;
+            // console.log(this);
+            // console.log(shapes);
+        } else {
+            // console.log(this);
+            // console.log("can't drop", shapes);
             // Create new block when this one hits the bottom
-            shapes.unshift(new Shape({
-                w: 100,
-                h: 100,
-                x: 200,
-                color: "blue",
-                stroke: true
-            }));
-            shapes[0].drop(1, 10);
+            // shapes.unshift(new Shape({
+            //     w: 100,
+            //     h: 100,
+            //     x: 200,
+            //     color: "blue",
+            //     stroke: true
+            // }));
+            // shapes[0].drop(1, 10);
 
             clearInterval(dropInterval);
         }
@@ -260,21 +307,41 @@ Shape.prototype.drop = function(change = 0.5, interval = 10){
 
 // Player1.drop(0.5, 10);
 
+// shapes.push(new Shape({
+//     w: 100,
+//     h: 100,
+//     x: 250,
+//     stroke: true
+// }));
+// shapes[0].drop(1, 10);
+
+
 shapes.push(new Shape({
-    w: 100,
+    w: 150,
     h: 100,
-    x: 250,
+    x: Game.canvas.width-150,
+    y: 1,
+    stroke: true,
+    color: "gray"
+}));
+
+shapes.push(new Shape({
+    w: 25,
+    h: 25,
+    x: Game.canvas.width-50,
+    y: 1,
+    color: "red",
+    prefab: true,
     stroke: true
 }));
-shapes[0].drop(1, 10);
-
 
 shapes.push(new Shape({
-    w: 50,
-    h: 100,
-    x: 1,
-    y: 150,
-    stroke: true
+    w: 5,
+    h: 5,
+    x: Game.canvas.width-52,
+    y: 1,
+    color: "red",
+    prefab: true
 }));
 
 // shapes.push(new Shape({
@@ -371,28 +438,71 @@ Game.clear = function() {
 // 	}
 // };
 
-function getMousePos(canvas, evt) {
-    let rect = canvas.getBoundingClientRect();
-    return {
-      x: evt.clientX - rect.left,
-      y: evt.clientY - rect.top
-    };
-}
+
+const getShape = (id) => {
+    return shapes.find((shape) => shape.id === id);
+};
 
 Game.canvas.addEventListener("click", function(event){
-    let mouse = getMousePos(Game.canvas, event);
-    let mx = mouse.x;
-    let my = mouse.y;
+    if(selectedShape!== undefined && selectedShape.prefab === true){
+        // find shape in array
+        selectedShape.followMouse = false;
+        selectedShape.prefab = false;
+        // console.log(getShape(selectedShape.id));
+        let x = getShape(selectedShape.id);
+        // console.log(x);
+        x.drop();
+        // selectedShape.drop();
+        // console.log("selected", selectedShape);
+        // console.log("shapes", shapes);
+        // Make shape drop
+        // unselect shape
+    }
 
-    for(let i = 0; i < shapes.length; i++){
-        let isOnXAxis = ((mx > shapes[i].x) && (mx < (shapes[i].x + shapes[i].w)));
-        let isOnYAxis = ((my > shapes[i].y) && (my < (shapes[i].y + shapes[i].h)));
-        if(isOnXAxis && isOnYAxis){
-            console.log(`Clicked on ${shapes.id}`);
+    if(selectedShape !== undefined){
+        let mouse = getMousePos(Game.canvas, event);
+        let mx = mouse.x;
+        let my = mouse.y;
+
+        let smallestShape;
+
+        for(let i = 0; i < shapes.length; i++){
+            let isOnXAxis = ((mx >= shapes[i].x) && (mx <= (shapes[i].x + shapes[i].w)));
+            let isOnYAxis = ((my >= shapes[i].y) && (my <= (shapes[i].y + shapes[i].h)));
+            if(isOnXAxis && isOnYAxis){
+                if(smallestShape === undefined){
+                    smallestShape = shapes[i];
+                } else {
+                    isOnXAxis = ((shapes[i].x >= smallestShape.x) && (shapes[i].x  <= (smallestShape.x + smallestShape.w)));
+                    isOnYAxis = ((shapes[i].y >= smallestShape.y) && (shapes[i].y <= (smallestShape.y + smallestShape.h)));
+                    if(isOnXAxis && isOnYAxis){
+                        // console.log(`${smallestShape.id} surrounds ${shapes[i].id}`);
+                        smallestShape = shapes[i];    
+                    }
+                }
+            }
+        }
+
+        if(smallestShape !== undefined && smallestShape.prefab === true){
+            selectedShape = smallestShape;
+
+            let newShape = Object.create(selectedShape);
+            selectedShape = newShape;
+            newShape.followMouse = true;
+            newShape.id = getNewId();
+            shapes.push(newShape);
         }
     }
 });
 
+
+Game.canvas.addEventListener("mousemove", function(event){
+    globalMousePosition = getMousePos(Game.canvas, event);
+});
+
+Game.canvas.addEventListener("mousedown", function(event){
+
+});
 
 
 
