@@ -165,44 +165,64 @@ const isInsideXAxis = (shape1x,  shape1, shape2x, shape2) => {
 };
 
 Shape.prototype.isEmptySpaceBelow = function(){
-    let bottomOfShape = (this.y+this.h+this.lineWidth);
+    
+    let context = this;
     let shapeBelow = false;
-    // If it is not above an object
-    for(let i = 0; i < shapes.length; i++){
-        if(shapes[i].id !== this.id && shapes[i].ignore === false){
-            
-            // Compare range function?
-            if(isInsideXAxis(this, shapes[i])) {
-                if((bottomOfShape > (shapes[i].y-this.borderWidth)) && (bottomOfShape < (shapes[i].y + shapes[i].h))){
-                    // console.log("bottom of shape", bottomOfShape);
-                    // console.log('shapes[i].y', shapes[i].y);
-                    // console.log('(shapes[i].y + shapes[i].h)', (shapes[i].y + shapes[i].h));
-                    // console.log(shapes[i]);
-                    return false;
+
+    this.constituent.forEach((shape) => {
+
+        let bottomOfShape = (this.y + shape.y + shape.h + shape.lineWidth);
+       
+        // If it is not above an object
+        for(let i = 0; i < shapes.length; i++){
+            if(shapes[i].id !== context.id && shapes[i].ignore === false){
+                // console.log("can look in here");
+                for(let a = 0; a < shapes[i].constituent.length; a++){
+                    // Compare range function?
+                    if(isInsideXAxis(this.x, shape, shapes[i].x, shapes[i].constituent[a])) {
+                        let testingShapeY = shapes[i].constituent[a].y + shapes[i].y;
+                        if((bottomOfShape > (testingShapeY-shape.borderWidth)) && (bottomOfShape < (testingShapeY + shapes[i].constituent[a].h))){
+                            // console.log("bottom of shape", bottomOfShape);
+                            // console.log('shapes[i].y', shapes[i].y);
+                            // console.log('(shapes[i].y + shapes[i].h)', (shapes[i].y + shapes[i].h));
+                            // console.log(shapes[i]);
+                            
+                            shapeBelow = true;
+                        }
+                    }
                 }
             }
         }
+    
+        if(bottomOfShape >= Game.canvas.height){
+            shapeBelow = true;
+        } 
+
+    });
+
+ 
+    
+    // console.log("true");
+    // return true;
+
+    if(shapeBelow === true){
+        return  false;
+    } else {
+        return true;
     }
 
-    if(bottomOfShape >= Game.canvas.height){
-        return false;
-    } 
 
-    return true;
-    // if(shapeBelow === false){
-    //     if(bottomOfShape < Game.canvas.height){
-    //         return true;
-    //     } else {
-    //         return false;
-    //     }
-    // }
 };
 
 Shape.prototype.update = function(player = false) {
     // Update code goes here.
-    this.rightEdge = this.x + this.w;
+    // console.log(shapes);
+    this.constituent.forEach((shape) => {
+        shape.rightEdge = this.x + shape.x + shape.w;
+    });
     
-    if(player === true){
+    
+    if(player === "true"){
         // let leftMax = 0;
 
         // let objectInWayLeft = false;
