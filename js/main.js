@@ -356,6 +356,8 @@ shapes.push(new Shape(
     }
 ));
 
+
+
 shapes.push(new Shape(
     [
         {
@@ -370,6 +372,20 @@ shapes.push(new Shape(
             h: 25,
             x: 1,
             y: 26,
+            color: "blue"
+        },
+        {
+            w: 25,
+            h: 25,
+            x: 25,
+            y: 25,
+            color: "red"
+        },
+        {
+            w: 25,
+            h: 25,
+            x: 25,
+            y: 50,
             color: "blue"
         }
     ], 
