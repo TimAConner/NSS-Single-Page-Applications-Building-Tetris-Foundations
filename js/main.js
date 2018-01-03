@@ -94,8 +94,8 @@ let Shape = function(shapes = [{}], options = {}){
 
     shapes.forEach((shape, index) => {
         this.constituent.push({});
-        this.constituent[index].h = shape.h || 25;
-        this.constituent[index].w = shape.w || 25;
+        this.constituent[index].h = shape.h || Game.canvas.height;
+        this.constituent[index].w = shape.w || Game.canvas.width-3;
         this.constituent[index].x = shape.x  || ((Game.canvas.width/2)-this.constituent[index].w);
         
         this.constituent[index].y = shape.y || 0;
@@ -121,7 +121,7 @@ let Shape = function(shapes = [{}], options = {}){
 
     this.id = options.id || getNewId();
     
-
+// console.log(this.ignore);
     this.draw =  function() {
         // console.log("shapes", shapes);
 
@@ -317,6 +317,22 @@ Shape.prototype.drop = function(change = 0.5, interval = 10){
 };
 
 
+shapes.push(new Shape(
+    [
+        {
+            h: 100,
+            x: 1,
+            y: 1,
+            color: "gray",
+            stroke: true
+        }
+    ], 
+    {
+        x: 1,
+        y: 1,
+        ignore: true
+    }
+));
 
 shapes.push(new Shape(
     [
@@ -352,7 +368,8 @@ shapes.push(new Shape(
     {
         prefab: true,
         x: 10,
-        y: 1
+        y: 1,
+        ignore: true
     }
 ));
 
@@ -391,7 +408,8 @@ shapes.push(new Shape(
     {
         prefab: true,
         x: 260,
-        y: 1
+        y: 1,
+        ignore: true
     }
 ));
 
@@ -430,7 +448,8 @@ shapes.push(new Shape(
     {
         prefab: true,
         x: 125,
-        y: 1
+        y: 1,
+        ignore: true
     }
 ));
 
@@ -469,7 +488,8 @@ shapes.push(new Shape(
     {
         prefab: true,
         x: 200,
-        y: 1
+        y: 1,
+        ignore: true
     }
 ));
 
@@ -507,7 +527,8 @@ shapes.push(new Shape(
     {
         prefab: true,
         x: 350,
-        y: 1
+        y: 1,
+        ignore: true
     }
 ));
 
