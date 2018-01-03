@@ -473,6 +473,44 @@ shapes.push(new Shape(
     }
 ));
 
+shapes.push(new Shape(
+    [
+        {
+            w: 25,
+            h: 25,
+            x: 1,
+            y: 1,
+            color: "red"
+        },
+        {
+            w: 25,
+            h: 25,
+            x: 1,
+            y: 25,
+            color: "blue"
+        },
+        {
+            w: 25,
+            h: 25,
+            x: 1,
+            y: 50,
+            color: "red"
+        },
+        {
+            w: 25,
+            h: 25,
+            x: 25,
+            y: 50,
+            color: "blue"
+        }
+    ], 
+    {
+        prefab: true,
+        x: 350,
+        y: 1
+    }
+));
+
 // Core Methods
 Game.run = function() {
     // Run code goes here.
