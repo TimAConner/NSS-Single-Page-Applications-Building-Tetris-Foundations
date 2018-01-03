@@ -462,25 +462,32 @@ Game.canvas.addEventListener("click", function(event){
     }
 
     if(selectedShape !== undefined){
+
         let mouse = getMousePos(Game.canvas, event);
         let mx = mouse.x;
         let my = mouse.y;
 
         let smallestShape;
 
+        
+
+       
         for(let i = 0; i < shapes.length; i++){
-            let isOnXAxis = ((mx >= shapes[i].x) && (mx <= (shapes[i].x + shapes[i].w)));
-            let isOnYAxis = ((my >= shapes[i].y) && (my <= (shapes[i].y + shapes[i].h)));
-            if(isOnXAxis && isOnYAxis){
-                if(smallestShape === undefined){
-                    smallestShape = shapes[i];
-                } else {
-                    isOnXAxis = ((shapes[i].x >= smallestShape.x) && (shapes[i].x  <= (smallestShape.x + smallestShape.w)));
-                    isOnYAxis = ((shapes[i].y >= smallestShape.y) && (shapes[i].y <= (smallestShape.y + smallestShape.h)));
-                    if(isOnXAxis && isOnYAxis){
-                        // console.log(`${smallestShape.id} surrounds ${shapes[i].id}`);
-                        smallestShape = shapes[i];    
-                    }
+            for(let a = 0; a < shapes[i].constituent.length; a++){
+                let isOnXAxis = ((mx >=  (shapes[i].x + shapes[i].constituent[a].x)) && (mx <= ((shapes[i].x + shapes[i].constituent[a].x)) + shapes[i].constituent[a].w));
+                let isOnYAxis = ((my >= (shapes[i].y+shapes[i].constituent[a].y)) && (my <= ((shapes[i].y+shapes[i].constituent[a].y) + shapes[i].constituent[a].h)));
+                if(isOnXAxis && isOnYAxis){
+                    // if(smallestShape === undefined){
+                    //     smallestShape = shapes[i].constituent[a];
+                    // } else {
+                        // isOnXAxis = ((shapes[i].constituent[a].x >= smallestShape.x) && (shapes[i].constituent[a].x  <= (smallestShape.x + smallestShape.w)));
+                        // isOnYAxis = ((shapes[i].constituent[a].y >= smallestShape.y) && (shapes[i].constituent[a].y <= (smallestShape.y + smallestShape.h)));
+                        // if(isOnXAxis && isOnYAxis){
+                        //     // console.log(`${smallestShape.id} surrounds ${shapes[i].constituent[a].id}`);
+                        //     smallestShape = shapes[i].constituent[a];    
+                        // }
+                    // }
+                    selectedShape = shapes[i];
                 }
             }
         }
