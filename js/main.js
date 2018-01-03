@@ -140,6 +140,8 @@ let Shape = function(shapes = [{}], options = {}){
                 Game.ctx.lineWidth = 3;
                 shape.lineWidth = Game.ctx.lineWidth ; 
                 Game.ctx.fillStyle = shape.color;
+                
+                // console.log(this.x, shape.x);
                 Game.ctx.fillRect(this.x + shape.x, this.y + shape.y, shape.w, shape.h);
             } else {
                 Game.ctx.lineWidth = 3;
@@ -314,29 +316,7 @@ Shape.prototype.drop = function(change = 0.5, interval = 10){
     }, interval);
 };
 
-shapes.push(new Shape(
-    [
-        {
-            w: 25,
-            h: 25,
-            x: 1,
-            y: 1,
-            color: "red"
-        },
-        {
-            w: 25,
-            h: 25,
-            x: 25,
-            y: 25,
-            color: "blue"
-        }
-    ], 
-    {
-        prefab: true,
-        x: 100,
-        y: 1
-    }
-));
+
 
 
 shapes.push(new Shape(
@@ -359,44 +339,6 @@ shapes.push(new Shape(
     {
         prefab: true,
         x: 175,
-        y: 1
-    }
-));
-
-shapes.push(new Shape(
-    [
-        {
-            w: 25,
-            h: 25,
-            x: 1,
-            y: 1,
-            color: "red"
-        },
-        {
-            w: 25,
-            h: 25,
-            x: 1,
-            y: 26,
-            color: "blue"
-        },
-        {
-            w: 25,
-            h: 25,
-            x: 25,
-            y: 1,
-            color: "red"
-        },
-        {
-            w: 25,
-            h: 25,
-            x: 25,
-            y: 26,
-            color: "blue"
-        }
-    ], 
-    {
-        prefab: true,
-        x: 250,
         y: 1
     }
 ));
