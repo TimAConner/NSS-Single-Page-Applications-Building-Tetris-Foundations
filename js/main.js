@@ -1,6 +1,6 @@
 "use strict";/* Keys.js */
 
-let Keys = {Left:false,Right:false,MouseDown:false};
+let Keys = {Left:false, Right:false, MouseDown:false};
 
 /* Game.js */
 
@@ -88,72 +88,76 @@ const getNewId = () => {
 };
 
 /* Shape.js */
-let Shape = function(options = {}){
+let Shape = function(shapes = [{}], options = {}){
 
-    // Options id, x, y, width, height, stroke = false
-    // X and Y should be 1 by defualt, not zero.  Zero is false and doesn twork with the system below.  Need to fix
+    this.constituent = [];
 
-    this.id = options.id || getNewId();
-    this.h = options.h || 25;
-    this.w = options.w || 25;
-    this.x = options.x  || ((Game.canvas.width/2)-this.w);
+    shapes.forEach((shape, index) => {
+        this.constituent.push({});
+        this.constituent[index].h = shape.h || 25;
+        this.constituent[index].w = shape.w || 25;
+        this.constituent[index].x = shape.x  || ((Game.canvas.width/2)-this.constituent[index].w);
+        
+        this.constituent[index].y = shape.y || 0;
+        this.constituent[index].stroke = shape.stroke || false;
+        this.constituent[index].color = shape.color || "#FF0000";
+        this.constituent[index].middle = this.constituent[index].x + (this.constituent[index].w/2);
+        this.constituent[index].rightEdge = this.constituent[index].x + this.constituent[index].w;   
+        this.constituent[index].borderWidth = shape.borderWidth || 1;
+    });
 
-    this.y = options.y || 0;
-    this.stroke = options.stroke || false;
-    this.color = options.color || "#FF0000";
-    this.middle = this.x + (this.w/2);
-    this.rightEdge = this.x + this.w;   
-    this.borderWidth = options.borderWidth || 1;
+    this.x = options.x || 1;
+    this.y = options.y || 1;
 
-    this.direction="r";
+    this.direction = "r";
+
     this.horizontalSpeed = 5;
+
     this.ignore = options.ignore || false;
 
     this.prefab = options.prefab || false;
 
     this.followMouse = options.followMouse || false;
 
+    this.id = options.id || getNewId();
+    
 
-    this.draw = function() {
-        // Draw code goes here.
+    this.draw =  function() {
+        // console.log("shapes", shapes);
+
         if(this.followMouse){
             this.ignore = true;
             this.x = globalMousePosition.x;
             this.y = globalMousePosition.y;
+            console.log("following", this);
         } else {
             this.ignore = false;
+            console.log("not", this);
         }
 
-        if(this.stroke === false){
-            Game.ctx.lineWidth = 3;
-            this.lineWidth = Game.ctx.lineWidth ; 
-            Game.ctx.fillStyle= this.color;
-            Game.ctx.fillRect(this.x,this.y,this.w,this.h);
-        } else {
-            Game.ctx.lineWidth = 3;
-            this.lineWidth = Game.ctx.lineWidth ; 
-            Game.ctx.strokeStyle= this.color;
-            Game.ctx.strokeRect(this.x,this.y,this.w,this.h);
-        }
-        
+        this.constituent.forEach((shape) => {    
+            if(shape.stroke === false){
+                Game.ctx.lineWidth = 3;
+                shape.lineWidth = Game.ctx.lineWidth ; 
+                Game.ctx.fillStyle = shape.color;
+                Game.ctx.fillRect(this.x + shape.x, this.y + shape.y, shape.w, shape.h);
+            } else {
+                Game.ctx.lineWidth = 3;
+                shape.lineWidth = Game.ctx.lineWidth ; 
+                Game.ctx.strokeStyle = shape.color;
+                Game.ctx.strokeRect(this.x + shape.x, this.y + shape.y, shape.w, shape.h);
+            }
+        });  
     };
-
 
 };
 
-const isInsideXAxis = (shape1, shape2) => {
-    // |
-    let string = "";
+const isInsideXAxis = (shape1x,  shape1, shape2x, shape2) => {
 
-    //  )
+    let x1 = shape1x + shape1.x;
+    let x2 =  shape2x + shape2.x;
 
-    if(((shape1.x > (shape2.x-shape2.lineWidth)) && (shape1.x < (shape2.x+shape2.w+shape2.lineWidth))) || (((shape1.rightEdge > shape2.x) && (shape1.rightEdge < shape2.rightEdge)))){
-        // console.log('shape2.x', shape2.x);
-        // console.log('shape1.rightEdge', shape1.rightEdge);
-        // console.log('shape2.rightEdge', shape2.rightEdge);
-        // console.log('shape1.x', shape1.x);
-        // console.log('(shape2.x-shape2.lineWidth)', (shape2.x-shape2.lineWidth));
-        // console.log('shape1.rightEdge', shape1.rightEdge);
+    if( ((x1 > ((x2)-shape2.lineWidth)) && ((x1) < (x2+shape2.w+shape2.lineWidth))) || ( (shape1.rightEdge > (x2) && (shape1.rightEdge < shape2.rightEdge)))){
         return true;
     } else {
         return false;
