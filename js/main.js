@@ -554,21 +554,8 @@ const getShape = (id) => {
     return shapes.find((shape) => shape.id === id);
 };
 
-Game.canvas.addEventListener("click", function(event){
-    if(selectedShape!== undefined && selectedShape.prefab === true){
-        // find shape in array
-        selectedShape.followMouse = false;
-        selectedShape.prefab = false;
-        // console.log(getShape(selectedShape.id));
-        let x = getShape(selectedShape.id);
-        // console.log(x);
-        x.drop();
-        // selectedShape.drop();
-        // console.log("selected", selectedShape);
-        // console.log("shapes", shapes);
-        // Make shape drop
-        // unselect shape
-    }
+Game.canvas.addEventListener("mousedown", function(event){
+
 
     if(selectedShape !== undefined){
 
@@ -631,8 +618,22 @@ Game.canvas.addEventListener("mousemove", function(event){
     globalMousePosition = getMousePos(Game.canvas, event);
 });
 
-Game.canvas.addEventListener("mousedown", function(event){
+Game.canvas.addEventListener("mouseup", function(event){
 
+    if(selectedShape!== undefined && selectedShape.prefab === true){
+        // find shape in array
+        selectedShape.followMouse = false;
+        selectedShape.prefab = false;
+        // console.log(getShape(selectedShape.id));
+        let x = getShape(selectedShape.id);
+        // console.log(x);
+        x.drop();
+        // selectedShape.drop();
+        // console.log("selected", selectedShape);
+        // console.log("shapes", shapes);
+        // Make shape drop
+        // unselect shape
+    }
 });
 
 
