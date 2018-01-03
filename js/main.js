@@ -329,7 +329,7 @@ shapes.push(new Shape(
     ], 
     {
         x: 1,
-        y: 1,
+        y: -3,
         ignore: true
     }
 ));
