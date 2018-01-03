@@ -357,6 +357,44 @@ shapes.push(new Shape(
 ));
 
 
+shapes.push(new Shape(
+    [
+        {
+            w: 25,
+            h: 25,
+            x: 1,
+            y: 1,
+            color: "red"
+        },
+        {
+            w: 25,
+            h: 25,
+            x: 25,
+            y: 1,
+            color: "blue"
+        },
+        {
+            w: 25,
+            h: 25,
+            x: 50,
+            y: 1,
+            color: "red"
+        },
+        {
+            w: 25,
+            h: 25,
+            x: 25,
+            y: 25,
+            color: "blue"
+        }
+    ], 
+    {
+        prefab: true,
+        x: 260,
+        y: 1
+    }
+));
+
 
 shapes.push(new Shape(
     [
@@ -391,7 +429,7 @@ shapes.push(new Shape(
     ], 
     {
         prefab: true,
-        x: 175,
+        x: 125,
         y: 1
     }
 ));
@@ -430,7 +468,7 @@ shapes.push(new Shape(
     ], 
     {
         prefab: true,
-        x: 250,
+        x: 200,
         y: 1
     }
 ));
