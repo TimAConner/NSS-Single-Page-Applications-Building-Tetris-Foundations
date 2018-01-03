@@ -413,17 +413,17 @@ Game.update = function() {
     // Update code goes here.
     // inventory.draw();
     shapes.forEach((shape, i) => {
-        if(i === 0){
-            shape.update(true);
-        }
-        
+            shape.update(false);
     });
 };
 
 Game.draw = function() {
     // Draw code goes here.
-	Game.clear();
+    Game.clear();
+    // console.log("shapes", shapes);
 	shapes.forEach((shape) => {
+        // console.log(shape);
+        // console.log("shape", shape);
         shape.draw();
     });
 };
