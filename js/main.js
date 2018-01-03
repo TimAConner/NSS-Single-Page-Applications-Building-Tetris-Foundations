@@ -125,14 +125,14 @@ let Shape = function(shapes = [{}], options = {}){
     this.draw =  function() {
         // console.log("shapes", shapes);
 
-        if(this.followMouse){
+        if(this.followMouse){   
             this.ignore = true;
             this.x = globalMousePosition.x;
             this.y = globalMousePosition.y;
-            console.log("following", this);
+            // console.log("following", this);
         } else {
             this.ignore = false;
-            console.log("not", this);
+            // console.log("not", this);
         }
 
         this.constituent.forEach((shape) => {    
