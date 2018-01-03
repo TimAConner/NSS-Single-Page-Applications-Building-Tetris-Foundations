@@ -492,16 +492,29 @@ Game.canvas.addEventListener("click", function(event){
             }
         }
 
-        if(smallestShape !== undefined && smallestShape.prefab === true){
-            selectedShape = smallestShape;
+        if(selectedShape !== undefined && selectedShape.prefab === true){
+            // selectedShape = smallestShape;
+            // console.log("selected shape", selectedShape);
+            // console.log("newShape", newShape);
 
-            let newShape = Object.create(selectedShape);
+            /* jshint ignore:start */
+            // console.log("selected");
+            let newShape = {}; 
+
+            $.extend(true, newShape, selectedShape);  
+            
             selectedShape = newShape;
+
             newShape.followMouse = true;
             newShape.id = getNewId();
+
             shapes.push(newShape);
+            // console.log("new shape", newShape);
+            // console.log("new shape", shapes);
+            /* jshint ignore:end */
         }
     }
+    // console.log(shapes);
 });
 
 
