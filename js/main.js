@@ -318,6 +318,43 @@ Shape.prototype.drop = function(change = 0.5, interval = 10){
 
 
 
+shapes.push(new Shape(
+    [
+        {
+            w: 25,
+            h: 25,
+            x: 1,
+            y: 1,
+            color: "red"
+        },
+        {
+            w: 25,
+            h: 25,
+            x: 25,
+            y: 1,
+            color: "blue"
+        },
+        {
+            w: 25,
+            h: 25,
+            x: 50,
+            y: 1,
+            color: "red"
+        },
+        {
+            w: 25,
+            h: 25,
+            x: 75,
+            y: 1,
+            color: "blue"
+        }
+    ], 
+    {
+        prefab: true,
+        x: 10,
+        y: 1
+    }
+));
 
 shapes.push(new Shape(
     [
