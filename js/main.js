@@ -300,128 +300,106 @@ Shape.prototype.drop = function(change = 0.5, interval = 10){
 
         // Right now is empty space below is reteurning true for some reason.
         // console.log('this.rightEdge', this.rightEdge);
-        this.rightEdge = this.x + this.w;
+    // console.log("drop");
+            if(this.isEmptySpaceBelow()){
+                // console.log("dropping"); 
+                this.y += change;
+            } else {
+                // console.log("stop");
+    
+                clearInterval(dropInterval);
+            }
         
-        if(this.isEmptySpaceBelow()){
-            
-            this.y += change;
-            // console.log(this);
-            // console.log(shapes);
-        } else {
-            // console.log(this);
-            // console.log("can't drop", shapes);
-            // Create new block when this one hits the bottom
-            // shapes.unshift(new Shape({
-            //     w: 100,
-            //     h: 100,
-            //     x: 200,
-            //     color: "blue",
-            //     stroke: true
-            // }));
-            // shapes[0].drop(1, 10);
 
-            clearInterval(dropInterval);
-        }
     }, interval);
 };
 
+shapes.push(new Shape(
+    [
+        {
+            w: 25,
+            h: 25,
+            x: 1,
+            y: 1,
+            color: "red"
+        },
+        {
+            w: 25,
+            h: 25,
+            x: 25,
+            y: 25,
+            color: "blue"
+        }
+    ], 
+    {
+        prefab: true,
+        x: 100,
+        y: 1
+    }
+));
 
 
+shapes.push(new Shape(
+    [
+        {
+            w: 25,
+            h: 25,
+            x: 1,
+            y: 1,
+            color: "red"
+        },
+        {
+            w: 25,
+            h: 25,
+            x: 1,
+            y: 26,
+            color: "blue"
+        }
+    ], 
+    {
+        prefab: true,
+        x: 175,
+        y: 1
+    }
+));
 
-
-// Player1.drop(0.5, 10);
-
-// shapes.push(new Shape({
-//     w: 100,
-//     h: 100,
-//     x: 250,
-//     stroke: true
-// }));
-// shapes[0].drop(1, 10);
-
-
-shapes.push(new Shape({
-    w: 150,
-    h: 100,
-    x: Game.canvas.width-150,
-    y: 1,
-    stroke: true,
-    color: "gray"
-}));
-
-shapes.push(new Shape({
-    w: 25,
-    h: 25,
-    x: Game.canvas.width-50,
-    y: 1,
-    color: "red",
-    prefab: true,
-    stroke: true
-}));
-
-shapes.push(new Shape({
-    w: 5,
-    h: 5,
-    x: Game.canvas.width-52,
-    y: 1,
-    color: "red",
-    prefab: true
-}));
-
-// shapes.push(new Shape({
-//     x: 1,
-//     y: 1,
-//     w: 70,
-//     h: 500,
-//     stroke: true
-// }));
-
-// // shapes.push(new Shape({
-// //     h: 150,
-// //     w: 150,
-// //     x: (Game.canvas.width-150),
-// //     y: 0,
-// //     stroke: true,
-// //     color: "#FFF"
-// // }));
-
-// shapes.push(new Shape({
-//     h: 150,
-//     w: 150,
-//     x: (Game.canvas.width-160),
-//     y: 0,
-//     stroke: true,
-//     color: "#FFF"
-// }));
-
-// shapes.push(new Shape({
-//     h: 150,
-//     w: 10,
-//     x: 25,
-//     y: 0,
-//     stroke: true,
-//     color: "#FFF"
-// }));
-
-// shapes.push(new Shape({
-//     h: 10,
-//     w: 100,
-//     x: 25,
-//     y: 150,
-//     stroke: true,
-//     color: "#FFF"
-// }));
-
-
-// shapes.push(new Shape({
-//     h: 10,
-//     w: 50,
-//     x: 100,
-//     y: 250,
-//     stroke: true,
-//     color: "#FFF"
-// }));
-
+shapes.push(new Shape(
+    [
+        {
+            w: 25,
+            h: 25,
+            x: 1,
+            y: 1,
+            color: "red"
+        },
+        {
+            w: 25,
+            h: 25,
+            x: 1,
+            y: 26,
+            color: "blue"
+        },
+        {
+            w: 25,
+            h: 25,
+            x: 25,
+            y: 1,
+            color: "red"
+        },
+        {
+            w: 25,
+            h: 25,
+            x: 25,
+            y: 26,
+            color: "blue"
+        }
+    ], 
+    {
+        prefab: true,
+        x: 250,
+        y: 1
+    }
+));
 
 
 // Core Methods
